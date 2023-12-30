@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import Logo from './logo.jpg';
 import { Button } from '@/shadcn/ui/button';
@@ -7,10 +7,14 @@ import { Switch } from '@/shadcn/ui/switch';
 import { useTheme } from '@components/theme-provider';
 import SignInDialog from '@components/Navbar/Sign';
 
+import { useGetSelfQuery } from '@/features/auth/authSlice';
+import UserDropdown from './UserDropdown';
+
 export default function Navbar() {
-    const [darkMoke, setDarkMode] = useState(true);
+    const { data, isLoading, isError, isSuccess } = useGetSelfQuery();
     const [search, setSearch] = useState('');
     const { theme, setTheme } = useTheme();
+    const [darkMoke, setDarkMode] = useState(theme === 'dark');
     const toggleTheme = () => {
         if (theme === 'light') setTheme('dark');
         else setTheme('light');
@@ -19,7 +23,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="flex justify-between gap-x-2 py-4 bg-neutral-300 dark:bg-neutral-800 px-4 lg:px-8">
+        <nav className="flex justify-between gap-x-2 py-4 bg-primary-foreground px-4 lg:px-8">
             <div className="flex items-center text-primary justify-center">
                 <img src={Logo} className="w-10 lg:w-12 rounded-full" />
                 <div className="ml-4 lg:flex flex-col hidden">
@@ -55,12 +59,17 @@ export default function Navbar() {
                 </Button>
             </form>
             <div className="flex gap-x-6 items-center">
-                <Switch checked={darkMoke} onClick={toggleTheme} className='hidden lg:block' />
-                <SignInDialog>
-                    <Button size="sm" variant="violet">
-                        Sign-in
-                    </Button>
-                </SignInDialog>
+                <Switch
+                    checked={darkMoke}
+                    onClick={toggleTheme}
+                    className="hidden lg:block"
+                />
+                {!isLoading &&
+                    (isSuccess ? (
+                        <UserDropdown user={data.user} />
+                    ) : (
+                        <SignInDialog />
+                    ))}
             </div>
         </nav>
     );

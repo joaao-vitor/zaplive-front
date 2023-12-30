@@ -13,10 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shadcn/ui/button';
 import { Checkbox } from '@/shadcn/ui/checkbox';
 import { useToast } from '@/shadcn/ui/use-toast';
-import axios from 'axios';
-
 import { useAppDispatch } from '@/hooks';
-import { toggleOpen } from '@/features/signDialog/signSlice'
+import { toggleOpen } from '@/features/signDialog/signSlice';
+import { useSignInMutation } from '@/features/auth/authSlice';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const signInSchema = z.object({
     email: z.string().email(),
@@ -24,34 +24,43 @@ const signInSchema = z.object({
     rememberme: z.boolean().optional(),
 });
 
+interface SignInError {
+    status: number;
+    data: {
+        code: number;
+        message: string;
+    };
+}
 export function SignInForm() {
-    const dispatch = useAppDispatch()
+    const [signIn] = useSignInMutation();
+
+    const dispatch = useAppDispatch();
     const { toast } = useToast();
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
     });
     async function onSubmit(values: z.infer<typeof signInSchema>) {
         try {
-            const user = await axios.post(
-                `${import.meta.env.VITE_API_URL}/auth/sign-in`,
-                {
-                    ...values,
-                }
-            );
-            console.log(user)
+            // const user = (
+            //     await axios.post(
+            //         `${import.meta.env.VITE_API_URL}/auth/sign-in`,
+            //         {
+            //             ...values,
+            //         }
+            //     )
+            // ).data.user;
+            await signIn({ ...values }).unwrap();
             toast({
                 variant: 'success',
                 description: 'You logged in successfully',
             });
-            dispatch(toggleOpen())
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast({
-                    variant: 'destructive',
-                    description:
-                        error.response?.data.message || 'Something went wrong',
-                });
-            }
+            dispatch(toggleOpen());
+        } catch (err) {
+            let error = err as SignInError;
+            toast({
+                variant: 'destructive',
+                description: error.data.message,
+            });
         }
     }
     return (

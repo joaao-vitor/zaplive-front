@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -22,6 +24,10 @@ module.exports = {
         "inter": ['"Inter"', 'sans-serif'],
       },
       colors: {
+        neutral: {
+          ...colors.neutral,
+          '850': 'rgb(28 28 28)'
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

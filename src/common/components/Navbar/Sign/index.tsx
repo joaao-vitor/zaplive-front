@@ -16,11 +16,7 @@ import { Button } from '@/shadcn/ui/button';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { toggleForm, toggleOpen } from '@/features/signDialog/signSlice';
 
-interface SignInDialogProps {
-    children: React.ReactNode;
-}
-
-export default function SignInDialog({ children }: SignInDialogProps) {
+export default function SignInDialog() {
     const { form, open } = useAppSelector((state) => state.sign);
     const dispatch = useAppDispatch();
     const handleForm = () => {
@@ -32,7 +28,11 @@ export default function SignInDialog({ children }: SignInDialogProps) {
     };
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger>{children}</DialogTrigger>
+            <DialogTrigger asChild>
+                <Button size="sm" variant="violet">
+                    Sign-in
+                </Button>
+            </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <img src={Logo} className="w-12 rounded-full self-center" />

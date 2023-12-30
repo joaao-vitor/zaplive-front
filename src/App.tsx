@@ -5,18 +5,19 @@ import { Toaster } from './shadcn/ui/toaster';
 import { Outlet } from 'react-router-dom';
 
 import { Provider } from 'react-redux';
-import {store} from './store';
+import { store } from './store';
+
+import { useGetSelfQuery } from './features/auth/authSlice';
 
 function App() {
+    const { data } = useGetSelfQuery();
     return (
-        <Provider store={store}>
-            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <CommonLayout className="h-full">
-                    <Outlet />
-                </CommonLayout>
-                <Toaster />
-            </ThemeProvider>
-        </Provider>
+        <>
+            <CommonLayout className="h-full">
+                <Outlet />
+            </CommonLayout>
+            <Toaster />
+        </>
     );
 }
 

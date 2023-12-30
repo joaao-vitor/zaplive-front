@@ -23,7 +23,6 @@ export const signSlice = createSlice({
     },
 });
 
-// Action creators are generated for each case reducer function
 export const { toggleForm, toggleOpen } = signSlice.actions;
 
 export default signSlice.reducer;
